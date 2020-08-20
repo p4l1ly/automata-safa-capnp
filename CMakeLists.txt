@@ -15,14 +15,10 @@ file(MAKE_DIRECTORY "${CAPNPC_OUTPUT_DIR}")
 
 capnp_generate_cpp(afaSources afaHeaders schema/afa.capnp)
 
-add_executable(bypass src/afapipe/bypass/main.cpp ${afaSources})
-target_link_libraries(bypass PRIVATE CapnProto::capnp)
-target_include_directories(bypass PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/afa_schema")
-
 add_executable(
   store_little
-  src/afapipe/gen_little/store.cpp
-  src/afapipe/gen_little/gen.cpp
+  src/cpp/afapipe/gen_little/store.cpp
+  src/cpp/afapipe/gen_little/gen.cpp
   ${afaSources}
 )
 target_link_libraries(store_little PRIVATE CapnProto::capnp)
