@@ -18,5 +18,6 @@ struct Term {
     not @4 :Term;
     or @5 :List(Term);
     and @6 :List(Term);
+    ref @7 :UInt32;
   }
 }

@@ -17,7 +17,8 @@ extra-source-files:  CHANGELOG.md, README.md, schema/afa.capnp
 build-type: Custom
 
 library
-  exposed-modules:     MyLib
+  exposed-modules:
+    Afa.FileIO
   autogen-modules:
     Capnp.Gen.ById.Xf7c01c6f70140b00
     Capnp.Gen.Schema.Afa
@@ -26,9 +27,13 @@ library
     Capnp.Gen.ById.Xf7c01c6f70140b00
     Capnp.Gen.Schema.Afa
     Capnp.Gen.Schema.Afa.Pure
+  build-tool-depends:
+    capnp:capnpc-haskell ^>= 0.6.0.0,
   build-depends:
     base ^>=4.13.0.0,
     capnp ^>=0.6.0,
+    afabuild ^>= 0.1.0.0,
+    array ^>= 0.5.4.0,
   hs-source-dirs:      src/hs
   default-language:    Haskell2010
 

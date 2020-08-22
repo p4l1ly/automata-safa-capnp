@@ -1,6 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
 
-import Control.Monad (forM)
 import Distribution.Simple (defaultMainWithHooks, simpleUserHooks, UserHooks(preBuild))
 import Distribution.Simple.Setup (BuildFlags(buildDistPref), fromFlag)
 import Distribution.PackageDescription (BuildInfo(hsSourceDirs), emptyBuildInfo)
@@ -10,10 +9,9 @@ import System.Exit (die)
 
 main = defaultMainWithHooks simpleUserHooks
   { preBuild = \args buildFlags -> do
-      [capnp, _] <- forM ["capnp", "capnpc-haskell"]$ \exe ->
-        findExecutable exe >>= \case
-          Just path -> return path
-          Nothing -> die$ "setup: Could not find executable " ++ exe
+      capnp <- findExecutable "capnp" >>= \case
+        Just path -> return path
+        Nothing -> die$ "setup: Could not find executable capnp"
 
       let gensrc = fromFlag (buildDistPref buildFlags) ++ "/gensrc"
       createDirectoryIfMissing False gensrc
