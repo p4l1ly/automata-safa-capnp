@@ -19,6 +19,7 @@ build-type: Custom
 library
   exposed-modules:
     Afa.FileIO
+    Afa.ToDot
   autogen-modules:
     Capnp.Gen.ById.Xf7c01c6f70140b00
     Capnp.Gen.Schema.Afa
@@ -32,8 +33,11 @@ library
   build-depends:
     base ^>=4.13.0.0,
     capnp ^>=0.6.0,
+    functor-dag ^>= 0.1.0.0,
     afabuild ^>= 0.1.0.0,
     array ^>= 0.5.4.0,
+    mtl ^>= 2.2.2,
+    interpolatedstring-perl6 ^>= 1.0.2,
   hs-source-dirs:      src/hs
   default-language:    Haskell2010
 
