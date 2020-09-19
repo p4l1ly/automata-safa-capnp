@@ -3,6 +3,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ExtendedDefaultRules #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TupleSections #-}
 
 module Afa.PrettyFileIO where
 
@@ -36,15 +37,15 @@ tokenizer str = case runParser (spaces *> many parseToken <* eof) () "tokenizer"
   where
   parseToken = (many1 alphaNum <|> ((:[]) <$> satisfy (not . isSpace))) <* spaces
 
-parsePrettyAfa :: String -> Afa
+parsePrettyAfa :: String -> (Int, Afa)
 parsePrettyAfa str = case runWParser (many statement) str of
   Right statements -> case semanticAnalysis statements of
     Right afa -> afa
     Left err -> error err
   Left err -> error$ show err
 
-exportPrettyAfa :: Afa -> String
-exportPrettyAfa (Afa varCount terms states) = intercalate "\n"$ concat
+exportPrettyAfa :: Int -> Afa -> String
+exportPrettyAfa varCount (Afa terms states) = intercalate "\n"$ concat
   [ map (\i -> [qq|var var{i}|]) [0..varCount - 1]
   , map (\(i, t) -> [qq|term term{i} {cata show_alg t}|])$ assocs terms
   , map (\(i, q) -> [qq|state state{i} term{q}|])$ assocs states
@@ -105,7 +106,7 @@ term = between (token "(") (token ")") operator
     , Fix . Not <$> (token "!" *> term)
     ]
 
-semanticAnalysis :: [Statement] -> Either String Afa
+semanticAnalysis :: [Statement] -> Either String (Int, Afa)
 semanticAnalysis statements = case nameClashes of
   [] -> do
     terms_unsorted <- listArray (0, termCount - 1)<$>
@@ -120,9 +121,8 @@ semanticAnalysis statements = case nameClashes of
           map (terms_unsorted'!) (elems termIxMap)
           ++ (fmap.fmap) (termIxMap!) states
 
-    return Afa
-      { varCount = varCount
-      , terms = terms'
+    return$ (varCount,)$ Afa
+      { terms = terms'
       , states = listArray (0, stateCount - 1) [termCount..]
       }
 

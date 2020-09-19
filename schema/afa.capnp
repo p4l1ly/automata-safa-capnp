@@ -4,9 +4,8 @@ using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("afapipe::schema");
 
 struct Afa {
-  variableCount @0 :UInt32;
-  terms @1 :List(Term);
-  states @2 :List(UInt32);
+  terms @0 :List(Term);
+  states @1 :List(UInt32);
 }
 
 struct Term {
