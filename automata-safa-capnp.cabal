@@ -1,0 +1,64 @@
+cabal-version:       3.0
+name:                automata-safa-capnp
+version:             0.1.0.0
+synopsis:            capnp schema for symbolic alternating finite automata
+-- description:
+-- bug-reports:
+-- license:
+license-file:        LICENSE
+author:              Pavol Vargovcik
+maintainer:          pavol.vargovcik@gmail.com
+-- copyright:
+-- category:
+extra-source-files:
+  CHANGELOG.md,
+  README.md,
+  schema/Afa.capnp,
+  schema/CnfAfa.capnp,
+  schema/SeparatedAfa.capnp,
+build-type: Custom
+
+library
+  exposed-modules:
+    Capnp.Gen.ById.Xf7c01c6f70140b00
+    Capnp.Gen.ById.Xf7c01c6f70140b00.Pure
+    Capnp.Gen.Schema.Afa
+    Capnp.Gen.Schema.Afa.Pure
+
+    Capnp.Gen.ById.Xe38d81482dce6081
+    Capnp.Gen.ById.Xe38d81482dce6081.Pure
+    Capnp.Gen.Schema.CnfAfa
+    Capnp.Gen.Schema.CnfAfa.Pure
+
+    Capnp.Gen.ById.X9478efb7d68e5dd0
+    Capnp.Gen.ById.X9478efb7d68e5dd0.Pure
+    Capnp.Gen.Schema.SeparatedAfa
+    Capnp.Gen.Schema.SeparatedAfa.Pure
+  autogen-modules:
+    Capnp.Gen.ById.Xf7c01c6f70140b00
+    Capnp.Gen.ById.Xf7c01c6f70140b00.Pure
+    Capnp.Gen.Schema.Afa
+    Capnp.Gen.Schema.Afa.Pure
+
+    Capnp.Gen.ById.Xe38d81482dce6081
+    Capnp.Gen.ById.Xe38d81482dce6081.Pure
+    Capnp.Gen.Schema.CnfAfa
+    Capnp.Gen.Schema.CnfAfa.Pure
+
+    Capnp.Gen.ById.X9478efb7d68e5dd0
+    Capnp.Gen.ById.X9478efb7d68e5dd0.Pure
+    Capnp.Gen.Schema.SeparatedAfa
+    Capnp.Gen.Schema.SeparatedAfa.Pure
+  build-tool-depends:
+    capnp:capnpc-haskell ^>= 0.6.0.0,
+  build-depends:
+    base ^>=4.13.0.0,
+    capnp ^>=0.6.0,
+  default-language:    Haskell2010
+
+custom-setup
+  setup-depends:
+    Cabal ^>=3.2.0,
+    base ^>=4.13.0.0,
+    process ^>=1.6.8.0,
+    directory ^>=1.3.6.0,

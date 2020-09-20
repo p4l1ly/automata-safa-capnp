@@ -29,7 +29,9 @@ main = defaultMainWithHooks simpleUserHooks
 
             where oneOfGeneratedFiles' = gensrc ++ '/' : oneOfGeneratedFiles
 
-      regenerateSchema "schema/afa.capnp" "Capnp/Gen/Schema/Afa.hs"
+      regenerateSchema "schema/Afa.capnp" "Capnp/Gen/Schema/Afa.hs"
+      regenerateSchema "schema/CnfAfa.capnp" "Capnp/Gen/Schema/CnfAfa.hs"
+      regenerateSchema "schema/SeparatedAfa.capnp" "Capnp/Gen/Schema/SeparatedAfa.hs"
 
       return (Just emptyBuildInfo{hsSourceDirs=[gensrc]}, [])
   }
