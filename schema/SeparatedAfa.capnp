@@ -3,6 +3,10 @@
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::separated_afa");
 
+using Java = import "/java.capnp";
+$Java.package("org.automata.safa.capnp");
+$Java.outerClassname("SeparatedAfaSchema");
+
 struct SeparatedAfa {
   qterms @0 :List(QTerm);
   aterms @1 :List(ATerm);

@@ -1,0 +1,61 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.automata.safa.capnp</groupId>
+  <artifactId>automata-safa-capnp</artifactId>
+  <version>1</version>
+
+  <properties>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.2</version>
+      </plugin>
+      <plugin>
+          <groupId>org.expretio.maven.plugins</groupId>
+          <artifactId>capnp-maven-plugin</artifactId>
+          <version>1.0</version>
+          <executions>
+              <execution>
+                  <goals>
+                      <goal>generate</goal>
+                  </goals>
+                  <configuration>
+                    <schemas>
+                        <schema>Afa.capnp</schema>
+                        <schema>CnfAfa.capnp</schema>
+                        <schema>SeparatedAfa.capnp</schema>
+                    </schemas>
+                    <schemaDirectory>schema</schemaDirectory>
+                    <outputDirectory>
+                      ${project.build.directory}/generated-sources/capnp/org/automata/safa/capnp
+                    </outputDirectory>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>repository-sonatype</id>
+      <name>repository-sonatype</name>
+      <url>https://repository.sonatype.org/service/local/repositories/central-proxy/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.capnproto</groupId>
+      <artifactId>runtime</artifactId>
+      <version>0.1.5</version>
+    </dependency>
+  </dependencies>
+</project>

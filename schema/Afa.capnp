@@ -3,6 +3,10 @@
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::afa");
 
+using Java = import "/java.capnp";
+$Java.package("org.automata.safa.capnp");
+$Java.outerClassname("AfaSchema");
+
 struct Afa {
   terms @0 :List(Term);
   states @1 :List(UInt32);
