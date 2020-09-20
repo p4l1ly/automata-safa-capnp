@@ -1,7 +1,7 @@
 @0xf7c01c6f70140b00;
 
 using Cxx = import "/capnp/c++.capnp";
-$Cxx.namespace("afapipe::schema");
+$Cxx.namespace("automata_safa_capnp::afa");
 
 struct Afa {
   terms @0 :List(Term);

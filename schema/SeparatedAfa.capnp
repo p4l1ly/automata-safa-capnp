@@ -1,5 +1,8 @@
 @0x9478efb7d68e5dd0;
 
+using Cxx = import "/capnp/c++.capnp";
+$Cxx.namespace("automata_safa_capnp::separated_afa");
+
 struct SeparatedAfa {
   qterms @0 :List(QTerm);
   aterms @1 :List(ATerm);
