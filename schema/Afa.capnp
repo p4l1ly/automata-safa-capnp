@@ -3,7 +3,7 @@
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::afa");
 
-using Java = import "/java.capnp";
+using Java = import "/capnp/java.capnp";
 $Java.package("org.automata.safa.capnp");
 $Java.outerClassname("AfaSchema");
 

@@ -15,7 +15,11 @@ file(MAKE_DIRECTORY "${CAPNPC_OUTPUT_DIR}")
 
 capnp_generate_cpp(
   afaSources afaHeaders
-  schema/Afa.capnp schema/CnfAfa.capnp schema/SeparatedAfa.capnp
+  schema/Afa.capnp
+  schema/CnfAfa.capnp
+  schema/SeparatedAfa.capnp
+  schema/CnfAfaRpc.capnp
+  schema/SeparatedAfaRpc.capnp
 )
 
 add_library(automata-safa-capnp ${afaSources})

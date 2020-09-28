@@ -32,6 +32,8 @@ main = defaultMainWithHooks simpleUserHooks
       regenerateSchema "schema/Afa.capnp" "Capnp/Gen/Schema/Afa.hs"
       regenerateSchema "schema/CnfAfa.capnp" "Capnp/Gen/Schema/CnfAfa.hs"
       regenerateSchema "schema/SeparatedAfa.capnp" "Capnp/Gen/Schema/SeparatedAfa.hs"
+      regenerateSchema "schema/CnfAfaRpc.capnp" "Capnp/Gen/Schema/CnfAfaRpc.hs"
+      regenerateSchema "schema/SeparatedAfaRpc.capnp" "Capnp/Gen/Schema/SeparatedAfaRpc.hs"
 
       return (Just emptyBuildInfo{hsSourceDirs=[gensrc]}, [])
   }

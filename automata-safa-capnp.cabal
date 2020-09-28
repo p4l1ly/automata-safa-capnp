@@ -15,7 +15,9 @@ extra-source-files:
   README.md,
   schema/Afa.capnp,
   schema/CnfAfa.capnp,
+  schema/CnfAfaRpc.capnp,
   schema/SeparatedAfa.capnp,
+  schema/SeparatedAfaRpc.capnp,
 build-type: Custom
 
 library
@@ -34,6 +36,16 @@ library
     Capnp.Gen.ById.X9478efb7d68e5dd0.Pure
     Capnp.Gen.Schema.SeparatedAfa
     Capnp.Gen.Schema.SeparatedAfa.Pure
+
+    Capnp.Gen.ById.Xf27389181c8a494e
+    Capnp.Gen.ById.Xf27389181c8a494e.Pure
+    Capnp.Gen.Schema.CnfAfaRpc
+    Capnp.Gen.Schema.CnfAfaRpc.Pure
+
+    Capnp.Gen.ById.Xd9f6247af5f364df
+    Capnp.Gen.ById.Xd9f6247af5f364df.Pure
+    Capnp.Gen.Schema.SeparatedAfaRpc
+    Capnp.Gen.Schema.SeparatedAfaRpc.Pure
   autogen-modules:
     Capnp.Gen.ById.Xf7c01c6f70140b00
     Capnp.Gen.ById.Xf7c01c6f70140b00.Pure
@@ -49,6 +61,16 @@ library
     Capnp.Gen.ById.X9478efb7d68e5dd0.Pure
     Capnp.Gen.Schema.SeparatedAfa
     Capnp.Gen.Schema.SeparatedAfa.Pure
+
+    Capnp.Gen.ById.Xf27389181c8a494e
+    Capnp.Gen.ById.Xf27389181c8a494e.Pure
+    Capnp.Gen.Schema.CnfAfaRpc
+    Capnp.Gen.Schema.CnfAfaRpc.Pure
+
+    Capnp.Gen.ById.Xd9f6247af5f364df
+    Capnp.Gen.ById.Xd9f6247af5f364df.Pure
+    Capnp.Gen.Schema.SeparatedAfaRpc
+    Capnp.Gen.Schema.SeparatedAfaRpc.Pure
   build-tool-depends:
     capnp:capnpc-haskell ^>= 0.6.0.0,
   build-depends:
