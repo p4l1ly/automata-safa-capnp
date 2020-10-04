@@ -18,8 +18,10 @@ capnp_generate_cpp(
   schema/Afa.capnp
   schema/CnfAfa.capnp
   schema/SeparatedAfa.capnp
+  schema/LoadedModelRpc.capnp
   schema/CnfAfaRpc.capnp
   schema/SeparatedAfaRpc.capnp
+  schema/DummyModelCheckerRpc.capnp
 )
 
 add_library(automata-safa-capnp ${afaSources})
@@ -36,3 +38,25 @@ install(
   TARGETS automata-safa-capnp
   PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/automata-safa-capnp"
 )
+
+add_executable(dummy-model-checker src/dummy_model_checker.c++)
+target_include_directories(dummy-model-checker PRIVATE "${CAPNPC_OUTPUT_DIR}")
+target_link_libraries(
+  dummy-model-checker
+  PRIVATE
+  CapnProto::capnp
+  CapnProto::capnp-rpc
+  automata-safa-capnp
+)
+set_target_properties(dummy-model-checker PROPERTIES CXX_STANDARD 17)
+
+add_executable(dummy-model-checker-client src/dummy_model_checker_client.c++)
+target_include_directories(dummy-model-checker-client PRIVATE "${CAPNPC_OUTPUT_DIR}")
+target_link_libraries(
+  dummy-model-checker-client
+  PRIVATE
+  CapnProto::capnp
+  CapnProto::capnp-rpc
+  automata-safa-capnp
+)
+set_target_properties(dummy-model-checker-client PROPERTIES CXX_STANDARD 17)

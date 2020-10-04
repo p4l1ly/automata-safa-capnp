@@ -16,6 +16,7 @@ extra-source-files:
   schema/Afa.capnp,
   schema/CnfAfa.capnp,
   schema/CnfAfaRpc.capnp,
+  schema/LoadedModelRpc.capnp,
   schema/SeparatedAfa.capnp,
   schema/SeparatedAfaRpc.capnp,
 build-type: Custom
@@ -36,6 +37,11 @@ library
     Capnp.Gen.ById.X9478efb7d68e5dd0.Pure
     Capnp.Gen.Schema.SeparatedAfa
     Capnp.Gen.Schema.SeparatedAfa.Pure
+
+    Capnp.Gen.ById.X98bb6d0a600d783c
+    Capnp.Gen.ById.X98bb6d0a600d783c.Pure
+    Capnp.Gen.Schema.LoadedModelRpc
+    Capnp.Gen.Schema.LoadedModelRpc.Pure
 
     Capnp.Gen.ById.Xf27389181c8a494e
     Capnp.Gen.ById.Xf27389181c8a494e.Pure
@@ -61,6 +67,11 @@ library
     Capnp.Gen.ById.X9478efb7d68e5dd0.Pure
     Capnp.Gen.Schema.SeparatedAfa
     Capnp.Gen.Schema.SeparatedAfa.Pure
+
+    Capnp.Gen.ById.X98bb6d0a600d783c
+    Capnp.Gen.ById.X98bb6d0a600d783c.Pure
+    Capnp.Gen.Schema.LoadedModelRpc
+    Capnp.Gen.Schema.LoadedModelRpc.Pure
 
     Capnp.Gen.ById.Xf27389181c8a494e
     Capnp.Gen.ById.Xf27389181c8a494e.Pure
