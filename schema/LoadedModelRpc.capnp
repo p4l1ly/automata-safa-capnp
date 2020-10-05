@@ -4,8 +4,9 @@ using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::rpc");
 
 interface ModelChecking {
-  solve @0 () -> (time: UInt32, result :Result);
+  solve @0 () -> (time :UInt32, result :Result);
   getControl @1 () -> (control :Control);
+  foo @2 () -> (results :List(Result));
 
   interface Control {
     pause @0 () -> (oldStatus :Status);
@@ -32,4 +33,3 @@ interface ModelChecking {
     cancelled @2;
   }
 }
-

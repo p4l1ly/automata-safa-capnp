@@ -22,6 +22,7 @@ capnp_generate_cpp(
   schema/CnfAfaRpc.capnp
   schema/SeparatedAfaRpc.capnp
   schema/DummyModelCheckerRpc.capnp
+  schema/MultisolverRpc.capnp
 )
 
 add_library(automata-safa-capnp ${afaSources})
@@ -60,3 +61,14 @@ target_link_libraries(
   automata-safa-capnp
 )
 set_target_properties(dummy-model-checker-client PROPERTIES CXX_STANDARD 17)
+
+add_executable(multisolver src/multisolver.c++)
+target_include_directories(multisolver PRIVATE "${CAPNPC_OUTPUT_DIR}")
+target_link_libraries(
+  multisolver
+  PRIVATE
+  CapnProto::capnp
+  CapnProto::capnp-rpc
+  automata-safa-capnp
+)
+set_target_properties(multisolver PROPERTIES CXX_STANDARD 17)

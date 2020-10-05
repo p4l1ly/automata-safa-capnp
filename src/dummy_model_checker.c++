@@ -132,4 +132,5 @@ int main() {
     ioProvider = &server.getIoProvider();
     auto& waitScope = server.getWaitScope();
     kj::NEVER_DONE.wait(waitScope);
+    return 0;
 }
