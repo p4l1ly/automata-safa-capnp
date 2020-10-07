@@ -38,11 +38,9 @@ public:
         , controls(kj::mv(controls_))
         , timeoutPromise(Promise<void>(kj::READY_NOW))
     {
-        std::cout << "loaded\n";
     }
 
     ~ModelCheckingImpl() {
-        std::cout << "unloaded\n";
     }
 
     kj::Promise<void> solve(SolveContext context) override {
@@ -71,7 +69,6 @@ public:
                     rpc::ModelChecking::Result r = result.getResult();
                     results.set(i, r);
 
-                    std::cout << "solved " << i << " " << static_cast<int>(r) << "\n";
                     if (r == rpc::ModelChecking::Result::CANCELLED) return;
 
                     solvedCount++;
@@ -84,13 +81,14 @@ public:
                     uint32_t new_timeout = std::max(t * 2, 1000u);
                     if (new_timeout < currentTimeout) {
                         currentTimeout = new_timeout;
-                        timeoutPromise = promiseTimeout(std::max(t, 1000u));
+                        timeoutPromise = promiseTimeout(t < 500 ? 1000u - t : t);
                     }
-                }).eagerlyEvaluate(nullptr)
+                }).eagerlyEvaluate([](auto _) {std::cout << "err1\n";})
             );
         }
 
-        return kj::joinPromises(kj::mv(promiseArr));
+        return kj::joinPromises(kj::mv(promiseArr))
+            .catch_([](auto _) {std::cout << "err3\n";});
     }
 
 private:
@@ -110,7 +108,8 @@ private:
             Array<Promise<void>> arr(
                 &cancelPromises[0], count, kj::DestructorOnlyArrayDisposer::instance);
             return kj::joinPromises(kj::mv(arr));
-        });
+        })
+        .catch_([](auto _) {std::cout << "err2\n";});
     }
 };
 
@@ -168,7 +167,8 @@ public:
             2,
             kj::DestructorOnlyArrayDisposer::instance
         );
-        return kj::joinPromises(kj::mv(arr));
+        return kj::joinPromises(kj::mv(arr))
+            .catch_([](auto _) {std::cout << "err4\n";});
     }
 };
 
