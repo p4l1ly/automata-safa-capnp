@@ -72,3 +72,14 @@ target_link_libraries(
   automata-safa-capnp
 )
 set_target_properties(multisolver PROPERTIES CXX_STANDARD 17)
+
+add_executable(file-solver src/file-solver.c++)
+target_include_directories(file-solver PRIVATE "${CAPNPC_OUTPUT_DIR}")
+target_link_libraries(
+  file-solver
+  PRIVATE
+  CapnProto::capnp
+  CapnProto::capnp-rpc
+  automata-safa-capnp
+)
+set_target_properties(file-solver PROPERTIES CXX_STANDARD 17)
