@@ -94,10 +94,10 @@ library
     Capnp.Gen.Schema.MultisolverRpc
     Capnp.Gen.Schema.MultisolverRpc.Pure
   build-tool-depends:
-    capnp:capnpc-haskell ^>= 0.6.0.0,
+    capnp:capnpc-haskell ^>= 0.6.0.3,
   build-depends:
     base ^>=4.13.0.0,
-    capnp ^>=0.6.0,
+    capnp ^>=0.6.0.3,
   default-language:    Haskell2010
 
 custom-setup
