@@ -20,7 +20,7 @@
       <plugin>
           <groupId>org.expretio.maven.plugins</groupId>
           <artifactId>capnp-maven-plugin</artifactId>
-          <version>1.0</version>
+          <version>1.2-SNAPSHOT</version>
           <executions>
               <execution>
                   <goals>
@@ -28,14 +28,16 @@
                   </goals>
                   <configuration>
                     <schemas>
-                        <schema>Afa.capnp</schema>
-                        <schema>CnfAfa.capnp</schema>
-                        <schema>SeparatedAfa.capnp</schema>
+                        <schema>Model/Term.capnp</schema>
+                        <schema>Model/Succinct.capnp</schema>
+                        <schema>Model/CnfAfa.capnp</schema>
+                        <schema>Model/Separated.capnp</schema>
                     </schemas>
-                    <schemaDirectory>schema</schemaDirectory>
+                    <schemaDirectory>schema/Afa</schemaDirectory>
                     <outputDirectory>
                       ${project.build.directory}/generated-sources/capnp/org/automata/safa/capnp
                     </outputDirectory>
+                    <nativeDependencyVersion>0.5.4-SNAPSHOT</nativeDependencyVersion>
                   </configuration>
               </execution>
           </executions>
@@ -55,7 +57,7 @@
     <dependency>
       <groupId>org.capnproto</groupId>
       <artifactId>runtime</artifactId>
-      <version>0.1.5</version>
+      <version>0.1.6-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
