@@ -2,17 +2,20 @@
 #include <capnp/ez-rpc.h>
 #include <kj/async-io.h>
 #include <vector>
+#include <chrono>
 
-#include "LoadedModelRpc.capnp.h"
-#include "MultisolverRpc.capnp.h"
-#include "SeparatedAfaRpc.capnp.h"
-#include "CnfAfaRpc.capnp.h"
+#include "automata-safa-capnp/Rpc/ModelChecker.capnp.h"
+#include "automata-safa-capnp/Rpc/ModelCheckers.capnp.h"
 
-namespace rpc = automata_safa_capnp::rpc;
-namespace srv = automata_safa_capnp::rpc::multisolver;
-namespace sep = automata_safa_capnp::rpc::separated_afa;
-namespace cnf = automata_safa_capnp::rpc::cnf_afa;
+namespace mc = automata_safa_capnp::rpc::model_checker;
+namespace mcs = automata_safa_capnp::rpc::model_checkers;
 
+namespace chrono = std::chrono;
+using capnp::RemotePromise;
+using capnp::EzRpcClient;
+using capnp::List;
+using capnp::AnyPointer;
+using kj::heapArrayBuilder;
 using kj::Promise;
 using kj::Own;
 using kj::Array;
@@ -20,21 +23,26 @@ using kj::Array;
 kj::WaitScope *wait_scope;
 kj::AsyncIoProvider *ioProvider;
 
-class ModelCheckingImpl final: public srv::ModelChecking::Server {
+typedef mc::ModelChecking<List<mcs::OneResult<AnyPointer>>> Multichecking;
+typedef mc::ModelChecker<List<mcs::Wrapper>, List<mcs::OneResult<AnyPointer>>> Multichecker;
+typedef mc::ModelChecker<AnyPointer, AnyPointer> SingleChecker;
+typedef mc::ModelChecking<AnyPointer> SingleChecking;
+
+class ModelCheckingImpl final: public Multichecking::Server {
     int count;
     int solvedCount;
     int currentTimeout;
-    Array<rpc::ModelChecking::Client> checkers;
-    Array<rpc::ModelChecking::Control::Client> controls;
+    Array<SingleChecking::Client> checkings;
+    Array<mc::Control::Client> controls;
     Promise<void> timeoutPromise;
 
 public:
     ModelCheckingImpl(
-        Array<rpc::ModelChecking::Client>&& checkers_,
-        Array<rpc::ModelChecking::Control::Client>&& controls_
+        Array<SingleChecking::Client>&& checkers_,
+        Array<mc::Control::Client>&& controls_
     )
         : count(checkers_.size())
-        , checkers(kj::mv(checkers_))
+        , checkings(kj::mv(checkers_))
         , controls(kj::mv(controls_))
         , timeoutPromise(Promise<void>(kj::READY_NOW))
     {
@@ -51,25 +59,24 @@ public:
 
         timeoutPromise = promiseTimeout(currentTimeout);
 
-        std::vector<Promise<void>> promises;
-        promises.reserve(count);
+        auto promiseBuilder = heapArrayBuilder<Promise<void>>(count);
 
-        Array<Promise<void>> promiseArr(
-            &promises[0], count, kj::DestructorOnlyArrayDisposer::instance);
-
-        srv::ModelChecking::SolveResults::Builder resultStructs = context.getResults();
-        auto times = resultStructs.initTimes(count);
-        auto results = resultStructs.initResults(count);
+        auto myResponse = context.getResults();
+        auto myMeta = myResponse.initMeta(count);
 
         for (uint i = 0; i < count; i++) {
-            promises.push_back(checkers[i].solveRequest().send()
-                .then([i, times, results, &promiseArr, this] (auto result) mutable {
-                    uint32_t t = result.getTime();
-                    times.set(i, t);
-                    rpc::ModelChecking::Result r = result.getResult();
-                    results.set(i, r);
+            promiseBuilder.add(checkings[i].solveRequest().send()
+                .then([i, myMeta, this] (auto result) mutable {
+                    auto oneResult = myMeta[i];
 
-                    if (r == rpc::ModelChecking::Result::CANCELLED) return;
+                    uint32_t t = result.getTime();
+                    bool cancelled = result.getCancelled();
+
+                    oneResult.setTime(t);
+                    oneResult.setCancelled(cancelled);
+                    oneResult.setMeta(result.getMeta());
+
+                    if (cancelled) return;
 
                     solvedCount++;
 
@@ -87,7 +94,13 @@ public:
             );
         }
 
-        return kj::joinPromises(kj::mv(promiseArr))
+        auto tic = chrono::steady_clock::now();
+        return kj::joinPromises(promiseBuilder.finish())
+            .then([myResponse, tic]() mutable {
+                chrono::nanoseconds timediff = tic - chrono::steady_clock::now();
+                myResponse.setTime(timediff.count() / 1000000);
+                myResponse.setCancelled(false);
+            })
             .catch_([](auto _) {std::cout << "err3\n";});
     }
 
@@ -113,70 +126,68 @@ private:
     }
 };
 
-class LoaderImpl final: public srv::SeparatedCnfLoader::Server {
-    capnp::EzRpcClient sep_client;
-    sep::Loader::Client sep_loader;
+#define CHILD_COUNT 2
 
-    capnp::EzRpcClient cnf_client;
-    cnf::Loader::Client cnf_loader;
+class ModelCheckerImpl final: public Multichecker::Server {
+    Array<EzRpcClient> rpc_clients;
+    Array<SingleChecker::Client> clients;
 
 public:
-    LoaderImpl()
-        : sep_client("127.0.0.1:4001")
-        , sep_loader(sep_client.getMain<sep::Loader>())
-        , cnf_client("127.0.0.1:4002")
-        , cnf_loader(cnf_client.getMain<cnf::Loader>())
+    ModelCheckerImpl(Array<const char *> &addrs) {
         {
+            auto builder = heapArrayBuilder<EzRpcClient>(addrs.size());
+            for (auto addr: addrs) {
+                builder.add(addr);
+            }
+            rpc_clients = builder.finish();
+        }
+        {
+            auto builder = heapArrayBuilder<SingleChecker::Client>(addrs.size());
+            for (auto &rpc_client: rpc_clients) {
+                builder.add(rpc_client.getMain<SingleChecker>());
+            }
+            clients = builder.finish();
+        }
+
         std::cout << "hello\n";
     }
 
-    kj::Promise<void> load(LoadContext context) override {
-        auto sep_load_req = sep_loader.loadRequest();
-        sep_load_req.setModel(context.getParams().getSeparatedAfa());
-        auto sep_checker = sep_load_req.send().getLoadedModel();
-        auto sep_control_promise = sep_checker.getControlRequest().send();
-        auto sep_control = sep_control_promise.getControl();
+    Promise<void> load(LoadContext context) override {
+        auto checkings = heapArrayBuilder<SingleChecking::Client>(clients.size());
+        auto control_promises = heapArrayBuilder<Promise<void>>(clients.size());
+        auto controls = heapArrayBuilder<mc::Control::Client>(clients.size());
 
-        auto cnf_load_req = cnf_loader.loadRequest();
-        cnf_load_req.setModel(context.getParams().getCnfAfa());
-        auto cnf_checker = cnf_load_req.send().getLoadedModel();
-        auto cnf_control_promise = cnf_checker.getControlRequest().send();
-        auto cnf_control = cnf_control_promise.getControl();
+        int i = 0;
+        for (auto &client: clients) {
+            auto load_req = client.loadRequest();
+            load_req.setModel(context.getParams().getModel()[i].getData());
+            auto checking = load_req.send().getChecking();
+            auto control_promise = checking.getControlRequest().send();
+            auto control = control_promise.getControl();
 
-        Array<rpc::ModelChecking::Client>&& arr1 = Array(
-            new rpc::ModelChecking::Client[2]
-                {kj::mv(sep_checker), kj::mv(cnf_checker)},
-            2,
-            kj::DestructorOnlyArrayDisposer::instance
-        );
-        Array<rpc::ModelChecking::Control::Client>&& arr2 = Array(
-            new rpc::ModelChecking::Control::Client[2]
-                {kj::mv(sep_control), kj::mv(cnf_control)},
-            2,
-            kj::DestructorOnlyArrayDisposer::instance
-        );
+            checkings.add(kj::mv(checking));
+            control_promises.add(control_promise.ignoreResult());
+            controls.add(kj::mv(control));
 
-        context.getResults().setLoadedModel(
-            kj::heap<ModelCheckingImpl>(kj::mv(arr1), kj::mv(arr2)));
+            i++;
+        }
 
-        Array<Promise<void>> arr(
-            new Promise<void>[2]{
-                sep_control_promise.ignoreResult(),
-                cnf_control_promise.ignoreResult()
-            },
-            2,
-            kj::DestructorOnlyArrayDisposer::instance
-        );
-        return kj::joinPromises(kj::mv(arr))
+        context.getResults().setChecking(
+            kj::heap<ModelCheckingImpl>(checkings.finish(), controls.finish()));
+
+        return kj::joinPromises(control_promises.finish())
             .catch_([](auto _) {std::cout << "err4\n";});
     }
 };
 
 int main() {
-    capnp::EzRpcServer server(kj::heap<LoaderImpl>(), "0.0.0.0", 4000);
-    kj::WaitScope& waitScope = server.getWaitScope();
-    wait_scope = &waitScope;
+    Array<const char *> addrs = kj::heapArray({"127.0.0.1:4001", "127.0.0.1:4002"});
+    capnp::EzRpcServer server(
+        kj::heap<ModelCheckerImpl>(addrs),
+        "0.0.0.0",
+        4000
+    );
     ioProvider = &server.getIoProvider();
-    kj::NEVER_DONE.wait(waitScope);
+    kj::NEVER_DONE.wait(server.getWaitScope());
     return 0;
 }

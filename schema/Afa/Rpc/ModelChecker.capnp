@@ -3,12 +3,12 @@
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::rpc::model_checker");
 
-interface ModelChecker(Model, Result_) {
-  load @0 (model: Model) -> (checker :ModelChecking(Result_));
+interface ModelChecker(Model, Meta) {
+  load @0 (model: Model) -> (checking :ModelChecking(Meta));
 }
 
-interface ModelChecking(Result_) {
-  solve @0 () -> (result :Result_);
+interface ModelChecking(Meta) {
+  solve @0 () -> (time :UInt32, cancelled :Bool, meta :Meta);
   getControl @1 () -> (control :Control);
 }
 
@@ -29,15 +29,4 @@ enum State {
   running @1;
   paused @2;
   cancelled @3;
-}
-
-struct TimedResult {
-  time @0 :UInt32;
-  result @1 :Result;
-}
-
-enum Result {
-  empty @0;
-  nonempty @1;
-  cancelled @2;
 }

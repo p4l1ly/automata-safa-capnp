@@ -12,13 +12,13 @@ namespace mcs = automata_safa_capnp::rpc::model_checkers;
 
 int main() {
     capnp::EzRpcClient client("127.0.0.1:4000");
-    auto loader = client.getMain<mc::ModelChecker<mcs::VoidStruct, mc::TimedResult>>();
+    auto loader = client.getMain<mc::ModelChecker<mcs::VoidStruct, mcs::Emptiness>>();
     auto& waitScope = client.getWaitScope();
     kj::AsyncIoProvider *ioProvider = &client.getIoProvider();
 
     {
-        auto checker = loader.loadRequest().send().getChecker();
-        auto control = checker.getControlRequest().send().getControl();
+        auto checking = loader.loadRequest().send().getChecking();
+        auto control = checking.getControlRequest().send().getControl();
         kj::Promise<void> _ = ioProvider->getTimer()
             .afterDelay(250 * kj::MILLISECONDS)
             .then([control]() mutable {
@@ -26,18 +26,15 @@ int main() {
                     std::cout << "cancel\n";
                 }).eagerlyEvaluate(nullptr);
             });
-        auto solvePromise = checker.solveRequest().send();
+        auto solvePromise = checking.solveRequest().send();
         auto solveResult = solvePromise.wait(waitScope);
         const char* result;
-        switch(solveResult.getResult().getResult()) {
-            case mc::Result::EMPTY:
-                result = "empty"; break;
-            case mc::Result::NONEMPTY:
-                result = "nonempty"; break;
-            case mc::Result::CANCELLED:
-                result = "cancelled"; break;
-        }
-        std::cout << solveResult.getResult().getTime() << " " << result << std::endl;
+
+        if (solveResult.getCancelled()) { std::cout << " CANCELLED"; }
+        else if (solveResult.getMeta().getEmpty()) { std::cout << " EMPTY"; }
+        else { std::cout << " NONEMPTY"; }
+
+        std::cout << solveResult.getTime() << " " << result << std::endl;
     }
 
     ioProvider->getTimer().afterDelay(500 * kj::MILLISECONDS).wait(waitScope);

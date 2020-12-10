@@ -43,7 +43,7 @@ public:
     }
 };
 
-class ModelCheckingImpl final: public mc::ModelChecking<mc::TimedResult>::Server {
+class ModelCheckingImpl final: public mc::ModelChecking<mcs::Emptiness>::Server {
     bool cancel = false;
 
 public:
@@ -79,11 +79,11 @@ public:
         return exec->executeAsync([result, this, fulfiller{kj::mv(fulfiller)}]() mutable {
             usleep(500000);
             if (cancel) {
-                result.getResult().setTime(500);
-                result.getResult().setResult(mc::Result::CANCELLED);
+                result.setTime(500);
+                result.setCancelled(true);
             } else {
-                result.getResult().setTime(1000);
-                result.getResult().setResult(mc::Result::EMPTY);
+                result.setTime(1000);
+                result.getMeta().setEmpty(true);
                 usleep(500000);
             }
             fulfiller->fulfill(false);
@@ -92,13 +92,13 @@ public:
             .afterDelay(500 * kj::MILLISECONDS)
             .then([result, this]() mutable {
                 if (cancel) {
-                    result.getResult().setTime(500);
-                    result.getResult().setResult(mc::Result::CANCELLED);
+                    result.setTime(500);
+                    result.setCancelled(true);
                     kj::Promise<void> r = kj::READY_NOW;
                     return r;
                 } else {
-                    result.getResult().setTime(1000);
-                    result.getResult().setResult(mc::Result::EMPTY);
+                    result.setTime(1000);
+                    result.getMeta().setEmpty(true);
                     kj::Promise<void> r =
                         ioProvider->getTimer().afterDelay(500 * kj::MILLISECONDS);
                     return r;
@@ -117,12 +117,12 @@ public:
     }
 };
 
-class ModelCheckerImpl final: public mc::ModelChecker<mcs::VoidStruct, mc::TimedResult>::Server {
+class ModelCheckerImpl final: public mc::ModelChecker<mcs::VoidStruct, mcs::Emptiness>::Server {
 public:
     ModelCheckerImpl() {}
 
     kj::Promise<void> load(LoadContext context) override {
-        context.getResults().setChecker(kj::heap<ModelCheckingImpl>());
+        context.getResults().setChecking(kj::heap<ModelCheckingImpl>());
         return kj::READY_NOW;
     }
 };

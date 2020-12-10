@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     }
 
     capnp::EzRpcClient sep_client("127.0.0.1:4001");
-    auto sep_loader(sep_client.getMain<mc::ModelChecker<sep::BoolAfa, mc::TimedResult>>());
+    auto sep_loader(sep_client.getMain<mc::ModelChecker<sep::BoolAfa, mcs::Emptiness>>());
     kj::WaitScope& waitScope = sep_client.getWaitScope();
 
     int i = 0;
@@ -35,21 +35,16 @@ int main(int argc, char* argv[]) {
 
         auto sep_load_req = sep_loader.loadRequest();
         sep_load_req.setModel(afa);
-        auto sep_checker = sep_load_req.send().getChecker();
-        auto response = sep_checker.solveRequest().send();
+        auto sep_checking = sep_load_req.send().getChecking();
+        auto response = sep_checking.solveRequest().send();
         auto result = response.wait(waitScope);
         close(fd);
 
-        std::cout << i << " " << result.getResult().getTime();
+        std::cout << i << " " << result.getTime();
 
-        switch(result.getResult().getResult()) {
-            case mc::Result::CANCELLED:
-                std::cout << " CANCELLED"; break;
-            case mc::Result::EMPTY:
-                std::cout << " EMPTY"; break;
-            case mc::Result::NONEMPTY:
-                std::cout << " NONEMPTY"; break;
-        }
+        if (result.getCancelled()) { std::cout << " CANCELLED"; }
+        else if (result.getMeta().getEmpty()) { std::cout << " EMPTY"; }
+        else { std::cout << " NONEMPTY"; }
 
         std::cout << "\n";
         i++;
