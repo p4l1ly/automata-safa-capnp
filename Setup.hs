@@ -25,17 +25,17 @@ main = defaultMainWithHooks simpleUserHooks
               False -> return True
 
             when regenerate$
-              callProcess capnp ["compile", "-ohaskell:" ++ gensrc, schema]
+              callProcess capnp
+                ["compile", "-ohaskell:" ++ gensrc, "--src-prefix=schema", schema]
 
             where oneOfGeneratedFiles' = gensrc ++ '/' : oneOfGeneratedFiles
 
-      regenerateSchema "schema/Afa.capnp" "Capnp/Gen/Schema/Afa.hs"
-      regenerateSchema "schema/CnfAfa.capnp" "Capnp/Gen/Schema/CnfAfa.hs"
-      regenerateSchema "schema/SeparatedAfa.capnp" "Capnp/Gen/Schema/SeparatedAfa.hs"
-      regenerateSchema "schema/LoadedModelRpc.capnp" "Capnp/Gen/Schema/LoadedModelRpc.hs"
-      regenerateSchema "schema/CnfAfaRpc.capnp" "Capnp/Gen/Schema/CnfAfaRpc.hs"
-      regenerateSchema "schema/SeparatedAfaRpc.capnp" "Capnp/Gen/Schema/SeparatedAfaRpc.hs"
-      regenerateSchema "schema/MultisolverRpc.capnp" "Capnp/Gen/Schema/MultisolverRpc.hs"
+      regenerateSchema "schema/Afa/Model/Term.capnp" "Capnp/Gen/Afa/Model/Term.hs"
+      regenerateSchema "schema/Afa/Model/Succinct.capnp" "Capnp/Gen/Afa/Model/Succinct.hs"
+      regenerateSchema "schema/Afa/Model/CnfAfa.capnp" "Capnp/Gen/Afa/Model/CnfAfa.hs"
+      regenerateSchema "schema/Afa/Model/Separated.capnp" "Capnp/Gen/Afa/Model/SeparatedAfa.hs"
+      regenerateSchema "schema/Afa/Rpc/ModelChecker.capnp" "Capnp/Gen/Afa/Rpc/ModelChecker.hs"
+      regenerateSchema "schema/Afa/Rpc/ModelCheckers.capnp" "Capnp/Gen/Afa/Rpc/ModelCheckers.hs"
 
       return (Just emptyBuildInfo{hsSourceDirs=[gensrc]}, [])
   }

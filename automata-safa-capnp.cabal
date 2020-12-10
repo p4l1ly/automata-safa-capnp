@@ -13,86 +13,77 @@ maintainer:          pavol.vargovcik@gmail.com
 extra-source-files:
   CHANGELOG.md,
   README.md,
-  schema/Afa.capnp,
-  schema/CnfAfa.capnp,
-  schema/CnfAfaRpc.capnp,
-  schema/LoadedModelRpc.capnp,
-  schema/SeparatedAfa.capnp,
-  schema/SeparatedAfaRpc.capnp,
-  schema/MultisolverRpc.capnp,
+
+  schema/Afa/Model/Succinct.capnp,
+  schema/Afa/Model/Term.capnp,
+  schema/Afa/Model/CnfAfa.capnp,
+  schema/Afa/Model/Separated.capnp,
+
+  schema/Afa/Rpc/ModelChecker.capnp,
+  schema/Afa/Rpc/ModelCheckers.capnp,
 build-type: Custom
 
 library
   exposed-modules:
+    Capnp.Gen.ById.Xd4c5f198b0c1c530
+    Capnp.Gen.ById.Xd4c5f198b0c1c530.Pure
+    Capnp.Gen.Afa.Model.Term
+    Capnp.Gen.Afa.Model.Term.Pure
+
     Capnp.Gen.ById.Xf7c01c6f70140b00
     Capnp.Gen.ById.Xf7c01c6f70140b00.Pure
-    Capnp.Gen.Schema.Afa
-    Capnp.Gen.Schema.Afa.Pure
+    Capnp.Gen.Afa.Model.Succinct
+    Capnp.Gen.Afa.Model.Succinct.Pure
 
     Capnp.Gen.ById.Xe38d81482dce6081
     Capnp.Gen.ById.Xe38d81482dce6081.Pure
-    Capnp.Gen.Schema.CnfAfa
-    Capnp.Gen.Schema.CnfAfa.Pure
+    Capnp.Gen.Afa.Model.CnfAfa
+    Capnp.Gen.Afa.Model.CnfAfa.Pure
 
     Capnp.Gen.ById.X9478efb7d68e5dd0
     Capnp.Gen.ById.X9478efb7d68e5dd0.Pure
-    Capnp.Gen.Schema.SeparatedAfa
-    Capnp.Gen.Schema.SeparatedAfa.Pure
+    Capnp.Gen.Afa.Model.Separated
+    Capnp.Gen.Afa.Model.Separated.Pure
 
     Capnp.Gen.ById.X98bb6d0a600d783c
     Capnp.Gen.ById.X98bb6d0a600d783c.Pure
-    Capnp.Gen.Schema.LoadedModelRpc
-    Capnp.Gen.Schema.LoadedModelRpc.Pure
+    Capnp.Gen.Afa.Rpc.ModelChecker
+    Capnp.Gen.Afa.Rpc.ModelChecker.Pure
 
-    Capnp.Gen.ById.Xf27389181c8a494e
-    Capnp.Gen.ById.Xf27389181c8a494e.Pure
-    Capnp.Gen.Schema.CnfAfaRpc
-    Capnp.Gen.Schema.CnfAfaRpc.Pure
-
-    Capnp.Gen.ById.Xd9f6247af5f364df
-    Capnp.Gen.ById.Xd9f6247af5f364df.Pure
-    Capnp.Gen.Schema.SeparatedAfaRpc
-    Capnp.Gen.Schema.SeparatedAfaRpc.Pure
-
-    Capnp.Gen.ById.Xb0d121e2f199f8c9
-    Capnp.Gen.ById.Xb0d121e2f199f8c9.Pure
-    Capnp.Gen.Schema.MultisolverRpc
-    Capnp.Gen.Schema.MultisolverRpc.Pure
+    Capnp.Gen.ById.Xe7bb0c034c4bcfab
+    Capnp.Gen.ById.Xe7bb0c034c4bcfab.Pure
+    Capnp.Gen.Afa.Rpc.ModelCheckers
+    Capnp.Gen.Afa.Rpc.ModelCheckers.Pure
   autogen-modules:
+    Capnp.Gen.ById.Xd4c5f198b0c1c530
+    Capnp.Gen.ById.Xd4c5f198b0c1c530.Pure
+    Capnp.Gen.Afa.Model.Term
+    Capnp.Gen.Afa.Model.Term.Pure
+
     Capnp.Gen.ById.Xf7c01c6f70140b00
     Capnp.Gen.ById.Xf7c01c6f70140b00.Pure
-    Capnp.Gen.Schema.Afa
-    Capnp.Gen.Schema.Afa.Pure
+    Capnp.Gen.Afa.Model.Succinct
+    Capnp.Gen.Afa.Model.Succinct.Pure
 
     Capnp.Gen.ById.Xe38d81482dce6081
     Capnp.Gen.ById.Xe38d81482dce6081.Pure
-    Capnp.Gen.Schema.CnfAfa
-    Capnp.Gen.Schema.CnfAfa.Pure
+    Capnp.Gen.Afa.Model.CnfAfa
+    Capnp.Gen.Afa.Model.CnfAfa.Pure
 
     Capnp.Gen.ById.X9478efb7d68e5dd0
     Capnp.Gen.ById.X9478efb7d68e5dd0.Pure
-    Capnp.Gen.Schema.SeparatedAfa
-    Capnp.Gen.Schema.SeparatedAfa.Pure
+    Capnp.Gen.Afa.Model.Separated
+    Capnp.Gen.Afa.Model.Separated.Pure
 
     Capnp.Gen.ById.X98bb6d0a600d783c
     Capnp.Gen.ById.X98bb6d0a600d783c.Pure
-    Capnp.Gen.Schema.LoadedModelRpc
-    Capnp.Gen.Schema.LoadedModelRpc.Pure
+    Capnp.Gen.Afa.Rpc.ModelChecker
+    Capnp.Gen.Afa.Rpc.ModelChecker.Pure
 
-    Capnp.Gen.ById.Xf27389181c8a494e
-    Capnp.Gen.ById.Xf27389181c8a494e.Pure
-    Capnp.Gen.Schema.CnfAfaRpc
-    Capnp.Gen.Schema.CnfAfaRpc.Pure
-
-    Capnp.Gen.ById.Xd9f6247af5f364df
-    Capnp.Gen.ById.Xd9f6247af5f364df.Pure
-    Capnp.Gen.Schema.SeparatedAfaRpc
-    Capnp.Gen.Schema.SeparatedAfaRpc.Pure
-
-    Capnp.Gen.ById.Xb0d121e2f199f8c9
-    Capnp.Gen.ById.Xb0d121e2f199f8c9.Pure
-    Capnp.Gen.Schema.MultisolverRpc
-    Capnp.Gen.Schema.MultisolverRpc.Pure
+    Capnp.Gen.ById.Xe7bb0c034c4bcfab
+    Capnp.Gen.ById.Xe7bb0c034c4bcfab.Pure
+    Capnp.Gen.Afa.Rpc.ModelCheckers
+    Capnp.Gen.Afa.Rpc.ModelCheckers.Pure
   build-tool-depends:
     capnp:capnpc-haskell ^>= 0.6.0.3,
   build-depends:

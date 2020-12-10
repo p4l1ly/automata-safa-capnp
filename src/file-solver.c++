@@ -9,13 +9,13 @@
 
 namespace fs = std::filesystem;
 
-#include "LoadedModelRpc.capnp.h"
-#include "SeparatedAfaRpc.capnp.h"
-#include "SeparatedAfa.capnp.h"
+#include "automata-safa-capnp/Model/Separated.capnp.h"
+#include "automata-safa-capnp/Rpc/ModelChecker.capnp.h"
+#include "automata-safa-capnp/Rpc/ModelCheckers.capnp.h"
 
-namespace rpc = automata_safa_capnp::rpc;
-namespace sep = automata_safa_capnp::rpc::separated_afa;
-namespace ssep = automata_safa_capnp::separated_afa;
+namespace mc = automata_safa_capnp::rpc::model_checker;
+namespace mcs = automata_safa_capnp::rpc::model_checkers;
+namespace sep = automata_safa_capnp::model::separated;
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -24,31 +24,30 @@ int main(int argc, char* argv[]) {
     }
 
     capnp::EzRpcClient sep_client("127.0.0.1:4001");
-    sep::Loader::Client sep_loader(sep_client.getMain<sep::Loader>());
+    auto sep_loader(sep_client.getMain<mc::ModelChecker<sep::BoolAfa, mc::TimedResult>>());
     kj::WaitScope& waitScope = sep_client.getWaitScope();
 
     int i = 0;
     for (const auto & entry : fs::directory_iterator(std::string(argv[1]))) {
         int fd = open(entry.path().string().c_str(), O_RDONLY);
         capnp::StreamFdMessageReader message(fd);
-        ssep::SeparatedAfa::Reader afa = message.getRoot<ssep::SeparatedAfa>();
+        sep::BoolAfa::Reader afa = message.getRoot<sep::BoolAfa>();
 
         auto sep_load_req = sep_loader.loadRequest();
         sep_load_req.setModel(afa);
-        auto sep_checker = sep_load_req.send().getLoadedModel();
+        auto sep_checker = sep_load_req.send().getChecker();
         auto response = sep_checker.solveRequest().send();
         auto result = response.wait(waitScope);
         close(fd);
 
-        rpc::ModelChecking::Result r = result.getResult();
-        std::cout << i << " " << result.getTime();
+        std::cout << i << " " << result.getResult().getTime();
 
-        switch(result.getResult()) {
-            case rpc::ModelChecking::Result::CANCELLED:
+        switch(result.getResult().getResult()) {
+            case mc::Result::CANCELLED:
                 std::cout << " CANCELLED"; break;
-            case rpc::ModelChecking::Result::EMPTY:
+            case mc::Result::EMPTY:
                 std::cout << " EMPTY"; break;
-            case rpc::ModelChecking::Result::NONEMPTY:
+            case mc::Result::NONEMPTY:
                 std::cout << " NONEMPTY"; break;
         }
 

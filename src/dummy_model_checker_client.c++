@@ -4,15 +4,15 @@
 #include <unistd.h>
 #include <kj/async-io.h>
 
-#include "LoadedModelRpc.capnp.h"
-#include "DummyModelCheckerRpc.capnp.h"
+#include "automata-safa-capnp/Rpc/ModelChecker.capnp.h"
+#include "automata-safa-capnp/Rpc/ModelCheckers.capnp.h"
 
-namespace rpc = automata_safa_capnp::rpc;
-namespace srv = automata_safa_capnp::rpc::dummy_model_checker;
+namespace mc = automata_safa_capnp::rpc::model_checker;
+namespace mcs = automata_safa_capnp::rpc::model_checkers;
 
 int main() {
     capnp::EzRpcClient client("127.0.0.1:4000");
-    srv::Loader::Client loader = client.getMain<srv::Loader>();
+    auto loader = client.getMain<mc::ModelChecker<mcs::VoidStruct, mc::TimedResult>>();
     auto& waitScope = client.getWaitScope();
     kj::AsyncIoProvider *ioProvider = &client.getIoProvider();
 
@@ -29,15 +29,15 @@ int main() {
         auto solvePromise = checker.solveRequest().send();
         auto solveResult = solvePromise.wait(waitScope);
         const char* result;
-        switch(solveResult.getResult()) {
-            case rpc::ModelChecking::Result::EMPTY:
+        switch(solveResult.getResult().getResult()) {
+            case mc::Result::EMPTY:
                 result = "empty"; break;
-            case rpc::ModelChecking::Result::NONEMPTY:
+            case mc::Result::NONEMPTY:
                 result = "nonempty"; break;
-            case rpc::ModelChecking::Result::CANCELLED:
+            case mc::Result::CANCELLED:
                 result = "cancelled"; break;
         }
-        std::cout << solveResult.getTime() << " " << result << std::endl;
+        std::cout << solveResult.getResult().getTime() << " " << result << std::endl;
     }
 
     ioProvider->getTimer().afterDelay(500 * kj::MILLISECONDS).wait(waitScope);

@@ -4,13 +4,15 @@
 #include <unistd.h>
 #include <kj/async-io.h>
 
-#include "LoadedModelRpc.capnp.h"
-#include "DummyModelCheckerRpc.capnp.h"
+#include "automata-safa-capnp/Rpc/ModelChecker.capnp.h"
+#include "automata-safa-capnp/Rpc/ModelCheckers.capnp.h"
 
-namespace rpc = automata_safa_capnp::rpc;
-namespace srv = automata_safa_capnp::rpc::dummy_model_checker;
+namespace mc = automata_safa_capnp::rpc::model_checker;
+namespace mcs = automata_safa_capnp::rpc::model_checkers;
 
-class ControlImpl final: public rpc::ModelChecking::Control::Server {
+kj::AsyncIoProvider *ioProvider;
+
+class ControlImpl final: public mc::Control::Server {
     bool* cancel_ptr;
 
 public:
@@ -31,7 +33,7 @@ public:
         *cancel_ptr = true;
         auto status = context.getResults().getOldStatus();
         status.setTime(30);
-        status.setState(rpc::ModelChecking::Status::State::RUNNING);
+        status.setState(mc::State::RUNNING);
         return kj::READY_NOW;
     }
 
@@ -41,12 +43,11 @@ public:
     }
 };
 
-class ModelCheckingImpl final: public rpc::ModelChecking::Server {
-    kj::AsyncIoProvider **ioProvider;
+class ModelCheckingImpl final: public mc::ModelChecking<mc::TimedResult>::Server {
     bool cancel = false;
 
 public:
-    ModelCheckingImpl(kj::AsyncIoProvider **ioProvider_) : ioProvider(ioProvider_) {
+    ModelCheckingImpl() {
         std::cout << "create\n";
     }
 
@@ -73,36 +74,37 @@ public:
             exec = &KJ_ASSERT_NONNULL(*lock);
         }
 
-        rpc::ModelChecking::SolveResults::Builder result = context.getResults();
+        SolveResults::Builder result = context.getResults();
 
         return exec->executeAsync([result, this, fulfiller{kj::mv(fulfiller)}]() mutable {
             usleep(500000);
             if (cancel) {
-                result.setTime(500);
-                result.setResult(rpc::ModelChecking::Result::CANCELLED);
+                result.getResult().setTime(500);
+                result.getResult().setResult(mc::Result::CANCELLED);
             } else {
-                result.setTime(1000);
-                result.setResult(rpc::ModelChecking::Result::EMPTY);
+                result.getResult().setTime(1000);
+                result.getResult().setResult(mc::Result::EMPTY);
                 usleep(500000);
             }
             fulfiller->fulfill(false);
         });
-        return (*ioProvider)->getTimer()
+        return ioProvider->getTimer()
             .afterDelay(500 * kj::MILLISECONDS)
             .then([result, this]() mutable {
                 if (cancel) {
-                    result.setTime(500);
-                    result.setResult(rpc::ModelChecking::Result::CANCELLED);
+                    result.getResult().setTime(500);
+                    result.getResult().setResult(mc::Result::CANCELLED);
                     kj::Promise<void> r = kj::READY_NOW;
                     return r;
                 } else {
-                    result.setTime(1000);
-                    result.setResult(rpc::ModelChecking::Result::EMPTY);
+                    result.getResult().setTime(1000);
+                    result.getResult().setResult(mc::Result::EMPTY);
                     kj::Promise<void> r =
-                        (*ioProvider)->getTimer().afterDelay(500 * kj::MILLISECONDS);
+                        ioProvider->getTimer().afterDelay(500 * kj::MILLISECONDS);
                     return r;
                 }
             });
+        return kj::READY_NOW;
     }
 
     kj::Promise<void> getControl(GetControlContext context) override {
@@ -115,20 +117,18 @@ public:
     }
 };
 
-class LoaderImpl final: public srv::Loader::Server {
-    kj::AsyncIoProvider **ioProvider;
+class ModelCheckerImpl final: public mc::ModelChecker<mcs::VoidStruct, mc::TimedResult>::Server {
 public:
-    LoaderImpl(kj::AsyncIoProvider **ioProvider_) : ioProvider(ioProvider_) {}
+    ModelCheckerImpl() {}
 
     kj::Promise<void> load(LoadContext context) override {
-        context.getResults().setChecker(kj::heap<ModelCheckingImpl>(ioProvider));
+        context.getResults().setChecker(kj::heap<ModelCheckingImpl>());
         return kj::READY_NOW;
     }
 };
 
 int main() {
-    kj::AsyncIoProvider *ioProvider;
-    capnp::EzRpcServer server(kj::heap<LoaderImpl>(&ioProvider), "0.0.0.0", 4000);
+    capnp::EzRpcServer server(kj::heap<ModelCheckerImpl>(), "0.0.0.0", 4000);
     ioProvider = &server.getIoProvider();
     auto& waitScope = server.getWaitScope();
     kj::NEVER_DONE.wait(waitScope);
