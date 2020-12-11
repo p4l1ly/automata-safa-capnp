@@ -10,11 +10,20 @@ $Java.outerClassname("SeparatedAfaSchema");
 using Term = import "Term.capnp";
 
 struct BoolAfa {
-  qterms @0 :List(Term.QTerm11);
-  states @1 :List(Conjunct11);
+  aterms @0 :List(Term.BoolTerm11);
+  qterms @1 :List(Term.QTerm11);
+  states @2 :List(List(Conjunct11));
+  varCount @3 :UInt32;
 }
 
 struct Conjunct11 {
-  qterm @0 :UInt32;
-  aterm @1 :UInt32;
+  qterm @0 :Maybe1;
+  aterm @1 :Maybe1;
+}
+
+struct Maybe1 {
+  union {
+    nothing @0 :Void;
+    just @1 :UInt32;
+  }
 }
