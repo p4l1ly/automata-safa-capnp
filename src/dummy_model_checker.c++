@@ -119,8 +119,6 @@ public:
 
 class ModelCheckerImpl final: public mc::ModelChecker<mcs::VoidStruct, mcs::Emptiness>::Server {
 public:
-    ModelCheckerImpl() {}
-
     kj::Promise<void> load(LoadContext context) override {
         context.getResults().setChecking(kj::heap<ModelCheckingImpl>());
         return kj::READY_NOW;
