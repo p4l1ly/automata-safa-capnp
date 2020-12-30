@@ -4,8 +4,8 @@ using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::model::separated");
 
 using Java = import "/capnp/java.capnp";
-$Java.package("org.automata.safa.capnp");
-$Java.outerClassname("SeparatedAfaSchema");
+$Java.package("org.automata.safa.capnp.Afa.Model");
+$Java.outerClassname("Separated");
 
 using Term = import "Term.capnp";
 
@@ -17,8 +17,8 @@ struct BoolAfa {
 }
 
 struct Conjunct11 {
-  qterm @0 :Maybe1;
-  aterm @1 :Maybe1;
+  aterm @0 :Maybe1;
+  qterm @1 :Maybe1;
 }
 
 struct Maybe1 {

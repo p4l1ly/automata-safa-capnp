@@ -4,7 +4,7 @@ using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::model::term");
 
 using Java = import "/capnp/java.capnp";
-$Java.package("org.automata.safa.capnp");
+$Java.package("org.automata.safa.capnp.Afa.Model");
 $Java.outerClassname("Term");
 
 struct QTerm11 {

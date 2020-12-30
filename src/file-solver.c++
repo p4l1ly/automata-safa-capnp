@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fcntl.h>
 #include <unistd.h>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 
@@ -26,29 +27,43 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    capnp::EzRpcClient sep_client("127.0.0.1:4000");
-    auto sep_loader(sep_client.getMain<
+    capnp::EzRpcClient client("127.0.0.1:4043");
+    auto loader(client.getMain<
         mc::ModelChecker<List<mcs::Wrapper>, List<mcs::OneResult<mcs::Emptiness>>>
     >());
-    kj::WaitScope& waitScope = sep_client.getWaitScope();
+    kj::WaitScope& waitScope = client.getWaitScope();
 
-    for (const auto & entry : fs::directory_iterator(std::string(argv[1]))) {
-        int fd = open(entry.path().string().c_str(), O_RDONLY);
+    std::string dirstr = std::string(argv[1]);
+    fs::path dir(dirstr);
+    std::vector<int> filenames;
+
+    for (const auto & entry : fs::directory_iterator(dirstr)) {
+        filenames.push_back(std::stoi(entry.path().filename().string()));
+    }
+    std::sort(filenames.begin(), filenames.end());
+
+    for (int file : filenames) {
+        dir.append(std::to_string(file));
+        int fd = open(dir.c_str(), O_RDONLY);
+        dir.remove_filename();
         capnp::StreamFdMessageReader message(fd);
+
         AnyPointer::Reader afa = message.getRoot<AnyPointer>();
 
-        auto sep_load_req = sep_loader.loadRequest();
-        sep_load_req.initModel(1);
-        sep_load_req.getModel()[0].getData().setAs<AnyPointer>(afa);
-        auto sep_checking = sep_load_req.send().getChecking();
-        auto response = sep_checking.solveRequest().send();
+        auto load_req = loader.loadRequest();
+        load_req.initModel(1);
+        load_req.getModel()[0].getData().setAs<AnyPointer>(afa);
+        auto checking = load_req.send().getChecking();
+        auto response = checking.solveRequest().send();
         auto result = response.wait(waitScope);
         close(fd);
 
         std::cout
-            << entry.path().string()
+            << file
             << "\t" << result.getMeta()[0].getTime()
             << "\t";
+
+        // std::cerr << file << "\t" << result.getMeta()[0].getTime() << "\n";
 
         if (result.getMeta()[0].getCancelled()) { std::cout << "-2"; }
         else if (result.getMeta()[0].getMeta().getEmpty()) { std::cout << "0"; }

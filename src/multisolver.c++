@@ -74,9 +74,13 @@ public:
 
                     oneResult.setTime(t);
                     oneResult.setCancelled(cancelled);
+                    std::cerr << t << "\n";
                     oneResult.setMeta(result.getMeta());
 
-                    if (cancelled) return;
+                    if (cancelled) {
+                        std::cerr << "timed out\n";
+                        return;
+                    }
 
                     solvedCount++;
 
@@ -90,7 +94,7 @@ public:
                         currentTimeout = new_timeout;
                         timeoutPromise = promiseTimeout(t < 500 ? 1000u - t : t);
                     }
-                }).eagerlyEvaluate([](auto _) {std::cout << "err1\n";})
+                }).eagerlyEvaluate([](auto _) {std::cerr << "err1\n";})
             );
         }
 
@@ -101,7 +105,7 @@ public:
                 myResponse.setTime(timediff.count() / 1000000);
                 myResponse.setCancelled(false);
             })
-            .catch_([](auto _) {std::cout << "err3\n";});
+            .catch_([](auto _) {std::cerr << "err3\n";});
     }
 
 private:
@@ -109,7 +113,7 @@ private:
         return ioProvider->getTimer()
         .afterDelay(time * kj::MILLISECONDS)
         .then([&]() mutable {
-            std::cout << "timed out\n";
+            std::cerr << "timed out\n";
             std::vector<Promise<void>> cancelPromises;
             cancelPromises.reserve(count);
  
@@ -122,11 +126,9 @@ private:
                 &cancelPromises[0], count, kj::DestructorOnlyArrayDisposer::instance);
             return kj::joinPromises(kj::mv(arr));
         })
-        .catch_([](auto _) {std::cout << "err2\n";});
+        .catch_([](auto _) {std::cerr << "err2\n";});
     }
 };
-
-#define CHILD_COUNT 2
 
 class ModelCheckerImpl final: public Multichecker::Server {
     Array<EzRpcClient> rpc_clients;
@@ -148,8 +150,6 @@ public:
             }
             clients = builder.finish();
         }
-
-        std::cout << "hello\n";
     }
 
     Promise<void> load(LoadContext context) override {
@@ -176,16 +176,16 @@ public:
             kj::heap<ModelCheckingImpl>(checkings.finish(), controls.finish()));
 
         return kj::joinPromises(control_promises.finish())
-            .catch_([](auto _) {std::cout << "err4\n";});
+            .catch_([](auto _) {std::cerr << "err4\n";});
     }
 };
 
 int main() {
-    Array<const char *> addrs = kj::heapArray({"127.0.0.1:4001", "127.0.0.1:4002"});
+    Array<const char *> addrs = kj::heapArray({"127.0.0.1:4003"});
     capnp::EzRpcServer server(
         kj::heap<ModelCheckerImpl>(addrs),
         "0.0.0.0",
-        4000
+        4043
     );
     ioProvider = &server.getIoProvider();
     kj::NEVER_DONE.wait(server.getWaitScope());

@@ -87,13 +87,13 @@ library
   build-tool-depends:
     capnp:capnpc-haskell ^>= 0.6.0.3,
   build-depends:
-    base ^>=4.13.0.0,
+    base >=4.13.0.0 && <4.15,
     capnp ^>=0.6.0.3,
   default-language:    Haskell2010
 
 custom-setup
   setup-depends:
     Cabal ^>=3.2.0,
-    base ^>=4.13.0.0,
+    base >=4.13.0.0 && <4.15,
     process ^>=1.6.8.0,
     directory ^>=1.3.6.0,
