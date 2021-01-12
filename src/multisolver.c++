@@ -89,12 +89,15 @@ public:
                         return;
                     }
 
-                    uint32_t new_timeout = std::max(t * 2, 1000u);
+                    uint32_t new_timeout = std::max(t * 3 + 5000u, 15000u);
                     if (new_timeout < currentTimeout) {
                         currentTimeout = new_timeout;
-                        timeoutPromise = promiseTimeout(t < 500 ? 1000u - t : t);
+                        timeoutPromise = promiseTimeout(t * 3 + 5000u - t < 15000u ? 15000u - t : t * 3 + 5000u - t);
                     }
-                }).eagerlyEvaluate([](auto _) {std::cerr << "err1\n";})
+                }).eagerlyEvaluate([i, myMeta](auto _) mutable {
+                  myMeta[i].setCancelled(true);
+                  std::cerr << "err1\n";
+                })
             );
         }
 
@@ -181,11 +184,11 @@ public:
 };
 
 int main() {
-    Array<const char *> addrs = kj::heapArray({"127.0.0.1:4003"});
+    Array<const char *> addrs = kj::heapArray({"127.0.0.1:4001", "127.0.0.1:4002"});
     capnp::EzRpcServer server(
         kj::heap<ModelCheckerImpl>(addrs),
         "0.0.0.0",
-        4043
+        4040
     );
     ioProvider = &server.getIoProvider();
     kj::NEVER_DONE.wait(server.getWaitScope());
