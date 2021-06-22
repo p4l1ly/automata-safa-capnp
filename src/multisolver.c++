@@ -54,7 +54,7 @@ public:
     kj::Promise<void> solve(SolveContext context) override {
         if (!count) return kj::READY_NOW;
 
-        currentTimeout = 60000;
+        currentTimeout = 15000;
         solvedCount = 0;
 
         timeoutPromise = promiseTimeout(currentTimeout);
@@ -184,11 +184,11 @@ public:
 };
 
 int main() {
-    Array<const char *> addrs = kj::heapArray({"127.0.0.1:4001", "127.0.0.1:4002"});
+    Array<const char *> addrs = kj::heapArray({"127.0.0.1:4002"});
     capnp::EzRpcServer server(
         kj::heap<ModelCheckerImpl>(addrs),
         "0.0.0.0",
-        4040
+        4042
     );
     ioProvider = &server.getIoProvider();
     kj::NEVER_DONE.wait(server.getWaitScope());

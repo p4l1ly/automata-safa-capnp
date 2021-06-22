@@ -27,3 +27,19 @@ struct Maybe1 {
     just @1 :UInt32;
   }
 }
+
+struct Range16Nfa {
+  states @0 :List(List(ConjunctR16Q));
+  initial @1 :UInt32;
+  finals @2 :List(UInt32);
+}
+
+struct ConjunctR16Q {
+  ranges @0 :List(Range16);
+  state @1 :UInt32;
+}
+
+struct Range16 {
+  begin @0 :UInt16;
+  end @1 :UInt16;
+}
