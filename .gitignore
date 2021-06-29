@@ -6,3 +6,10 @@ cabal.project.local
 .project
 .settings
 /venv/
+Session.vim
+
+
+# Added by cargo
+
+/target
+Cargo.lock

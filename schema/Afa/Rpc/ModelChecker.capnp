@@ -3,6 +3,9 @@
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::rpc::model_checker");
 
+using Rust = import "../../rust.capnp";
+$Rust.parentModule("afa::rpc");
+
 interface ModelChecker(Model, Meta) {
   load @0 (model: Model) -> (checking :ModelChecking(Meta));
 }

@@ -7,6 +7,9 @@ using Java = import "/capnp/java.capnp";
 $Java.package("org.automata.safa.capnp.Afa.Model");
 $Java.outerClassname("Term");
 
+using Rust = import "../../rust.capnp";
+$Rust.parentModule("afa::model");
+
 struct QTerm11 {
   union {
     state @0 :UInt32;

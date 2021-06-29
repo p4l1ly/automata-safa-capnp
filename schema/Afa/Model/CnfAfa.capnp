@@ -7,6 +7,9 @@ using Java = import "/capnp/java.capnp";
 $Java.package("org.automata.safa.capnp.Afa.Model");
 $Java.outerClassname("CnfAfa");
 
+using Rust = import "../../rust.capnp";
+$Rust.parentModule("afa::model");
+
 struct Afa {
   variableCount @0 :UInt32;
   outputs @1 :List(Lit);

@@ -7,6 +7,9 @@ using Java = import "/capnp/java.capnp";
 $Java.package("org.automata.safa.capnp.Afa.Model");
 $Java.outerClassname("Separated");
 
+using Rust = import "../../rust.capnp";
+$Rust.parentModule("afa::model");
+
 using Term = import "Term.capnp";
 
 struct BoolAfa {
