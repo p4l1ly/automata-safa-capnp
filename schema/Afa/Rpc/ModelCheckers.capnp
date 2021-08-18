@@ -3,7 +3,7 @@
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::rpc::model_checkers");
 
-using Rust = import "../../rust.capnp";
+using Rust = import "../../language-support/rust.capnp";
 $Rust.parentModule("afa::rpc");
 
 using import "ModelChecker.capnp".ModelChecker;

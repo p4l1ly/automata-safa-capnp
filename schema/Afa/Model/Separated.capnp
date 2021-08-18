@@ -3,11 +3,11 @@
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("automata_safa_capnp::model::separated");
 
-using Java = import "/capnp/java.capnp";
+using Java = import "../../language-support/java.capnp";
 $Java.package("org.automata.safa.capnp.Afa.Model");
 $Java.outerClassname("Separated");
 
-using Rust = import "../../rust.capnp";
+using Rust = import "../../language-support/rust.capnp";
 $Rust.parentModule("afa::model");
 
 using Term = import "Term.capnp";

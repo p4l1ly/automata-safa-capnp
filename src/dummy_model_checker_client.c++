@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <kj/async-io.h>
 
-#include "automata-safa-capnp/Rpc/ModelChecker.capnp.h"
-#include "automata-safa-capnp/Rpc/ModelCheckers.capnp.h"
+#include "automata-safa-capnp/Afa/Rpc/ModelChecker.capnp.h"
+#include "automata-safa-capnp/Afa/Rpc/ModelCheckers.capnp.h"
 
 namespace mc = automata_safa_capnp::rpc::model_checker;
 namespace mcs = automata_safa_capnp::rpc::model_checkers;

@@ -10,9 +10,9 @@
 
 namespace fs = std::filesystem;
 
-#include "automata-safa-capnp/Model/Separated.capnp.h"
-#include "automata-safa-capnp/Rpc/ModelChecker.capnp.h"
-#include "automata-safa-capnp/Rpc/ModelCheckers.capnp.h"
+#include "automata-safa-capnp/Afa/Model/Separated.capnp.h"
+#include "automata-safa-capnp/Afa/Rpc/ModelChecker.capnp.h"
+#include "automata-safa-capnp/Afa/Rpc/ModelCheckers.capnp.h"
 
 using capnp::AnyPointer;
 using capnp::List;

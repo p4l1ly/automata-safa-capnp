@@ -28,12 +28,12 @@
                   </goals>
                   <configuration>
                     <schemas>
-                        <schema>Model/Term.capnp</schema>
-                        <schema>Model/Succinct.capnp</schema>
-                        <schema>Model/CnfAfa.capnp</schema>
-                        <schema>Model/Separated.capnp</schema>
+                        <schema>Afa/Model/Term.capnp</schema>
+                        <schema>Afa/Model/Succinct.capnp</schema>
+                        <schema>Afa/Model/CnfAfa.capnp</schema>
+                        <schema>Afa/Model/Separated.capnp</schema>
                     </schemas>
-                    <schemaDirectory>schema/Afa</schemaDirectory>
+                    <schemaDirectory>schema</schemaDirectory>
                     <outputDirectory>
                       ${project.build.directory}/generated-sources/capnp/org/automata/safa/capnp
                     </outputDirectory>
