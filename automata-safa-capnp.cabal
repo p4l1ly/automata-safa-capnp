@@ -21,6 +21,9 @@ extra-source-files:
 
   schema/Afa/Rpc/ModelChecker.capnp,
   schema/Afa/Rpc/ModelCheckers.capnp,
+
+  schema/language-support/rust.capnp,
+  schema/language-support/java.capnp,
 build-type: Custom
 
 library
