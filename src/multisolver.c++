@@ -28,6 +28,8 @@ typedef mc::ModelChecker<List<mcs::Wrapper>, List<mcs::OneResult<AnyPointer>>> M
 typedef mc::ModelChecker<AnyPointer, AnyPointer> SingleChecker;
 typedef mc::ModelChecking<AnyPointer> SingleChecking;
 
+int TIMEOUT = 15000;
+
 class ModelCheckingImpl final: public Multichecking::Server {
     int count;
     int solvedCount;
@@ -54,7 +56,7 @@ public:
     kj::Promise<void> solve(SolveContext context) override {
         if (!count) return kj::READY_NOW;
 
-        currentTimeout = 15000;
+        currentTimeout = TIMEOUT;
         solvedCount = 0;
 
         timeoutPromise = promiseTimeout(currentTimeout);
@@ -138,7 +140,7 @@ class ModelCheckerImpl final: public Multichecker::Server {
     Array<SingleChecker::Client> clients;
 
 public:
-    ModelCheckerImpl(Array<const char *> &addrs) {
+    ModelCheckerImpl(const Array<char *> &addrs) {
         {
             auto builder = heapArrayBuilder<EzRpcClient>(addrs.size());
             for (auto addr: addrs) {
@@ -183,12 +185,14 @@ public:
     }
 };
 
-int main() {
-    Array<const char *> addrs = kj::heapArray({"127.0.0.1:4002"});
+int main(int argc, char* argv[]) {
+    int port = atoi(argv[1]);
+    TIMEOUT = atoi(argv[2]);
+    Array<char *> addrs = kj::heapArray(&argv[3], argc - 3);
     capnp::EzRpcServer server(
         kj::heap<ModelCheckerImpl>(addrs),
         "0.0.0.0",
-        4042
+        port
     );
     ioProvider = &server.getIoProvider();
     kj::NEVER_DONE.wait(server.getWaitScope());
