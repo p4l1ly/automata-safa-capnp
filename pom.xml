@@ -3,7 +3,7 @@
 
   <groupId>org.automata.safa.capnp</groupId>
   <artifactId>automata-safa-capnp</artifactId>
-  <version>1.2</version>
+  <version>1.3</version>
 
   <properties>
       <maven.compiler.source>1.8</maven.compiler.source>
@@ -28,6 +28,7 @@
                   </goals>
                   <configuration>
                     <schemas>
+                        <schema>Lib.capnp</schema>
                         <schema>Afa/Model/Term.capnp</schema>
                         <schema>Afa/Model/Succinct.capnp</schema>
                         <schema>Afa/Model/CnfAfa.capnp</schema>

@@ -19,6 +19,31 @@ struct BoolAfa {
   varCount @3 :UInt32;
 }
 
+struct BoolAfa2 {
+  aterms @0 :List(Term.BoolTerm11);
+  qterms @1 :List(Term.QTerm11);
+  states @2 :List(List(SimpleConjunct11));
+  varCount @3 :UInt32;
+  initialFormula @4 :UInt32;
+  finalStates @5 :List(UInt32);
+}
+
+struct TwoBoolAfas {
+  aterms @0 :List(Term.BoolTerm11);
+  qterms @1 :List(Term.QTerm11);
+  states @2 :List(List(SimpleConjunct11));
+  varCount @3 :UInt32;
+  initialFormula1 @4 :UInt32;
+  finalStates1 @5 :List(UInt32);
+  initialFormula2 @6 :UInt32;
+  finalStates2 @7 :List(UInt32);
+}
+
+struct SimpleConjunct11 {
+  aterm @0 :UInt32;
+  qterm @1 :UInt32;
+}
+
 struct Conjunct11 {
   aterm @0 :Maybe1;
   qterm @1 :Maybe1;

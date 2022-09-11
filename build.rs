@@ -6,6 +6,7 @@ fn main() {
         .file("schema/Afa/Model/Succinct.capnp")
         .file("schema/Afa/Rpc/ModelChecker.capnp")
         .file("schema/Afa/Rpc/ModelCheckers.capnp")
+        .file("schema/Lib.capnp")
         .run()
         .expect("compiling schema");
 }

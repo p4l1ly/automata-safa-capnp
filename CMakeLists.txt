@@ -15,6 +15,7 @@ file(MAKE_DIRECTORY "${CAPNPC_OUTPUT_DIR}")
 
 capnp_generate_cpp(
   afaSources afaHeaders
+  schema/Lib.capnp
   schema/Afa/Model/Succinct.capnp
   schema/Afa/Model/Term.capnp
   schema/Afa/Model/CnfAfa.capnp
@@ -79,6 +80,16 @@ target_link_libraries(
   PRIVATE
   CapnProto::capnp
   CapnProto::capnp-rpc
+  automata-safa-capnp
+)
+set_target_properties(file-solver PROPERTIES CXX_STANDARD 17)
+
+add_executable(list-builder src/list-builder.c++)
+target_include_directories(list-builder PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/gensrc")
+target_link_libraries(
+  list-builder
+  PRIVATE
+  CapnProto::capnp
   automata-safa-capnp
 )
 set_target_properties(file-solver PROPERTIES CXX_STANDARD 17)

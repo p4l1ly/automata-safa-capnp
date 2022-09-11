@@ -12,3 +12,5 @@ pub mod afa {
         pub mod ModelCheckers_capnp { include!(concat!(env!("OUT_DIR"), "/schema/Afa/Rpc/ModelCheckers_capnp.rs")); }
     }
 }
+
+pub mod Lib_capnp { include!(concat!(env!("OUT_DIR"), "/schema/Lib_capnp.rs")); }
