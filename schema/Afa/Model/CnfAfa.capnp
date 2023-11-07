@@ -14,6 +14,7 @@ struct Afa {
   variableCount @0 :UInt32;
   outputs @1 :List(Lit);
   clauses @2 :List(List(Lit));
+  finals @3 :List(UInt32);
 }
 
 struct Lit {
