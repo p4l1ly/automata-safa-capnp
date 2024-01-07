@@ -17,6 +17,7 @@ struct Afa {
   finals @3 :List(UInt32);
   pureVars @4 :List(UInt32);  # Indices to variables that are not outputs and need not be guessed.
   upwardClauses @5 :List(UInt32);  # Indices to positive clauses with no symbols.
+  posqOutputs @6 :List(UInt32);  # Indices to outputs, transitions of which are B+(Q).
 }
 
 struct Lit {
